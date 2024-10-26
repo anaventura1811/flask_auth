@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
 from database import db
 from models.user import User
-from flask_login import LoginManager, login_user, current_user, login_required, logout_user
+from flask_login import LoginManager, current_user
+from flask_login import login_user, logout_user, login_required
 from dotenv import load_dotenv
 import os
 
@@ -38,7 +39,9 @@ def register():
             db.session.add(user)
             db.session.commit()
             return jsonify({"message": "Usuário cadastrado com sucesso"})
-    return jsonify({"message": "Não foi possível cadastrar o usuário"}), 400
+    return jsonify(
+        {"message": "Dados inválidos. Não foi possível cadastrar o usuário"}
+        ), 400
 
 
 @app.route('/login', methods=['POST'])
@@ -61,6 +64,24 @@ def login():
 def logout():
     logout_user()
     return jsonify({"message": "Logout realizado com sucesso"})
+
+
+@app.route('/user/<int:id_user>', methods=['GET'])
+@login_required
+def get_user(id_user):
+    user = User.query.get(id_user)
+    if user:
+        return jsonify({"username": user.username})
+    return jsonify({"message": "Usuário não encontrado"}), 404
+
+
+@app.route('/user/<int:id_user>', methods=['PUT'])
+@login_required
+def update_user(id_user):
+    user = User.query.get(id_user)
+    if user:
+        return jsonify({"username": user.username})
+    return jsonify({"message": "Usuário não encontrado"}), 404
 
 
 if __name__ == '__main__':
