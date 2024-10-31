@@ -3,6 +3,7 @@ from database import db
 from models.user import User
 from flask_login import LoginManager, current_user
 from flask_login import login_user, logout_user, login_required
+from bcrypt import hashpw, checkpw, gensalt
 from dotenv import load_dotenv
 import os
 
@@ -42,7 +43,8 @@ def register():
                 and password
                 and len(password) >= 8
                 and len(password) <= 10):
-            user = User(username=username, password=password, role="user")
+            pass_hashed = hashpw(password=str.encode(password), salt=gensalt())
+            user = User(username=username, password=pass_hashed, role="user")
             db.session.add(user)
             db.session.commit()
             return jsonify({"message": "Usuário cadastrado com sucesso"})
@@ -58,7 +60,8 @@ def login():
     password = data.get("password")
     if username and password:
         user = User.query.filter_by(username=username).first()
-        if user and user.password == password:
+        is_password_correct = checkpw(password=str.encode(password), hashed_password=str.encode(user.password))
+        if user and is_password_correct:
             login_user(user)
             print(current_user)
             return jsonify(
@@ -92,10 +95,14 @@ def update_user(id_user):
         return jsonify({"message": "Operação não permitida"}), 403
 
     if user and data.get("password"):
-        user.password = data.get("password")
-        db.session.commit()
-        return jsonify(
-            {"message": f"Usuário {user.username} atualizado com sucesso"})
+        if len(data.get("password")) >= 8 and len(data.get("password")) <= 10:
+            new_password = hashpw(password=str.encode(data.get("password"), salt=gensalt()))
+            user.password = new_password
+            db.session.commit()
+            return jsonify(
+                {"message": f"Usuário {user.username} atualizado com sucesso"})
+        else:
+            return jsonify({"message": "A senha deve conter no mínimo 8 caracteres e no máximo 10"})
     return jsonify({"message": "Usuário não encontrado"}), 404
 
 
