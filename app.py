@@ -8,11 +8,14 @@ import os
 
 load_dotenv()
 
-# uri é sempre no padrão 'mysql+pymysql:///usuario:senha@127.0.0.1:3306/' ou 'mysql+pymysql://usuario:senha@127.0.0.1:3306/database'
+'''
+    URI do MySQL é sempre no padrão 'mysql+pymysql:///usuario:senha@127.0.0.1:3306/nome-do-banco' ou 'mysql+pymysql://usuario:senha@127.0.0.1:3306/nome-do-banco', caso tenha senha
+    Caso o usuário não tenha senha, aí será 'mysql+pymysql:///usuario@127.0.0.1:3306/nome-do-banco' ou 'mysql+pymysql:///usuario@127.0.0.1:3306/nome-do-banco'
+    Do SQLite, vai ser: sqlite:///database.db
+'''
 app = Flask(__name__)
 uri = os.getenv('DB_URL')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
