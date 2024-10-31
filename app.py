@@ -10,7 +10,7 @@ load_dotenv()
 
 '''
     URI do MySQL é sempre no padrão 'mysql+pymysql:///usuario:senha@127.0.0.1:3306/nome-do-banco' ou 'mysql+pymysql://usuario:senha@127.0.0.1:3306/nome-do-banco', caso tenha senha
-    Caso o usuário não tenha senha, aí será 'mysql+pymysql:///usuario@127.0.0.1:3306/nome-do-banco' ou 'mysql+pymysql:///usuario@127.0.0.1:3306/nome-do-banco'
+    Caso o usuário não tenha senha, aí será 'mysql+pymysql:///usuario@127.0.0.1:3306/nome-do-banco' ou 'mysql+pymysql://usuario@127.0.0.1:3306/nome-do-banco'
     Do SQLite, vai ser: sqlite:///database.db
 '''
 app = Flask(__name__)
@@ -42,7 +42,7 @@ def register():
                 and password
                 and len(password) >= 8
                 and len(password) <= 10):
-            user = User(username=username, password=password)
+            user = User(username=username, password=password, role="user")
             db.session.add(user)
             db.session.commit()
             return jsonify({"message": "Usuário cadastrado com sucesso"})
