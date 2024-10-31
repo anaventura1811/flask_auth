@@ -8,9 +8,13 @@ import os
 
 load_dotenv()
 
+# uri é sempre no padrão 'mysql+pymysql:///usuario:senha@127.0.0.1:3306/' ou 'mysql+pymysql://usuario:senha@127.0.0.1:3306/database'
 app = Flask(__name__)
+uri = os.getenv('DB_URL')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
 login_manager = LoginManager()
 
