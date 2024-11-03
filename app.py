@@ -63,7 +63,6 @@ def login():
         is_password_correct = checkpw(password=str.encode(password), hashed_password=str.encode(user.password))
         if user and is_password_correct:
             login_user(user)
-            print(current_user)
             return jsonify(
                 {"message": "Autenticação realizada com sucesso"})
     return jsonify({"message": "Credenciais inválidas"}), 400
